@@ -9,7 +9,8 @@ app.get('/', function(req, res) {
     res.sendFile(path.join(__dirname + '/index.html'));
 });
 
-//app.post('/Employees', function(req, res) {
+app.post('/employees', function(req, res) {
+
 
 const mysql = require("mysql");
 
@@ -21,6 +22,7 @@ password: "ObiMelvinRooMewTully12!!",
 database: "employees"
 })
 
+
 //connecting to database
 connection.connect(function(error) {
     if(error) {
@@ -29,19 +31,28 @@ connection.connect(function(error) {
     }
     console.log("connected!");
 
-    //let id = req.body.id;
-    //console.log(id);
+    let id = req.body.id;
+    console.log(id);
 
-    connection.query("SELECT * FROM employee_demographics WHERE empID=1001", function(error, result) {
+    connection.query("UPDATE employee_demographics SET checked_in_status='yes' WHERE empID=" +id , (error, result) => {
         if(error)
         console.log(error);
+    });
 
-    console.table(result);
-    
-    //res.send(result);
+    connection.query("SELECT * FROM employee_demographics WHERE empID=" + id, (error, result) => {
+        if(error)
+        console.log(error);
+    res.send(result);
+    });
+
+    connection.query("SELECT * FROM employee_demographics", (error, result) => {
+        if(error);
+        console.log(error);
+        console.table(result);
+        console.log(result[0].AGE);
     });
 });
-//});
+});
 
 const webserver = app.listen(5000, function(){
     console.log("node web server is running");
