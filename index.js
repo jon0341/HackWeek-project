@@ -3,8 +3,13 @@ const app = express();
 const bodyParser = require("body-parser");
 const path = require("path");
 const { resourceLimits } = require("worker_threads");
+const { response } = require("express");
 
 app.use(bodyParser.urlencoded({extended: false}));
+
+app.use(express.static('public'))
+
+app.use(express.json({limit: '1mb'}));
 
 app.get('/', function(req, res) {
     res.sendFile(path.join(__dirname + '/index.html'));
@@ -13,7 +18,6 @@ app.get('/', function(req, res) {
 app.post('/employees', function(req, res) {
 
     const mysql = require("mysql");
-
     //config for database
     const connection = mysql.createConnection({
     host: "127.0.0.1",
@@ -47,23 +51,18 @@ app.post('/employees', function(req, res) {
             let h = "<h1>Employee Check-In</h1>";
             let str = "<table>";
             let row = '<th>First Name</th><th>Last Name</th><th>Age</th><th>Department</th><th>Checked In?</th>';
+            let returnLink = "<a href=index.html>Return to Main Page</a>";
             for (let j = 0; j < result.length; j++) {
                 row= row + '<tr>' + '<td>' + result[j].firstName + '</td>' + '<td>' + result[j].lastName + '</td>' + '<td>' + result[j].AGE+'</td>' + '<td>'+result[j].department+'</td>'
                 + '<td>'+result[j].checked_in_status+'</td>';
             }
-            str = str + row + '</table>';
+            str = str + row + '</table><hr><br>' + returnLink;
         res.send(h + str);
-        });
-
-        /*(connection.query("SELECT * FROM employee_demographics", (error, result) => {
-            if(error)
-            console.log(error);
-            console.table(result);
-            console.log(result[1].AGE);
-        });*/
+        })
+    
     });
-    });
+});
 
-const webserver = app.listen(5000, function(){
-    console.log("node web server is running");
+const webserver = app.listen(5000, () => {
+    console.log("listening on port 5000");
 });
