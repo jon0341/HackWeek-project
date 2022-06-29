@@ -32,9 +32,12 @@ connection.connect(function(error) {
     console.log("connected!");
 
     let id = req.body.id;
-    console.log(id);
 
-    connection.query("UPDATE employee_demographics SET checked_in_status='yes' WHERE empID=" +id , (error, result) => {
+    connection.query("SELECT EXISTS (SELECT * FROM employee_demographics where empID=999)", (error, result) => {
+        console.log("record found!");
+    });
+
+    connection.query("UPDATE employee_demographics SET checked_in_status='yes' WHERE empID=" + id, (error, result) => {
         if(error)
         console.log(error);
     });
@@ -46,10 +49,9 @@ connection.connect(function(error) {
     });
 
     connection.query("SELECT * FROM employee_demographics", (error, result) => {
-        if(error);
+        if(error)
         console.log(error);
         console.table(result);
-        console.log(result[0].AGE);
     });
 });
 });
